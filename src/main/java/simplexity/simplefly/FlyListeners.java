@@ -1,7 +1,5 @@
 package simplexity.simplefly;
 
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -16,7 +14,6 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class FlyListeners implements Listener {
     private static final NamespacedKey flyStatus = Util.flyStatus;
-    private static final MiniMessage miniMessage = SimpleFly.getMiniMessage();
     @EventHandler
     public void onPlayerLogin(PlayerJoinEvent joinEvent) {
         if (!ConfigValues.sessionPersistentFlight) {
@@ -27,14 +24,11 @@ public class FlyListeners implements Listener {
         Bukkit.getScheduler().runTaskLater(SimpleFly.getInstance(), () -> {
             boolean flyEnabled = playerPDC.getOrDefault(flyStatus, PersistentDataType.BOOLEAN, false);
             if (flyEnabled && player.hasPermission(Util.flyPermission)) {
-                System.out.println("Fly is enabled and person has perms");
                 player.setAllowFlight(true);
                 if (player.getFallDistance() > 0f) {
                     player.setFlying(true);
                 }
-                player.sendMessage(miniMessage.deserialize(
-                         ConfigValues.prefix + ConfigValues.flyOwn
-                ));
+                Util.sendUserMessage(player, ConfigValues.flyOwn, ConfigValues.enabled, null);
                 return;
             }
             if (flyEnabled && !player.hasPermission(Util.flyPermission)) {
@@ -50,7 +44,6 @@ public class FlyListeners implements Listener {
         PersistentDataContainer playerPDC = player.getPersistentDataContainer();
         Boolean flyEnabled = playerPDC.getOrDefault(flyStatus, PersistentDataType.BOOLEAN, false);
         if (flyEnabled) {
-            System.out.println("Fly is enabled");
             player.setAllowFlight(true);
             if (player.getFallDistance() > 0f) {
                 player.setFlying(true);
@@ -65,7 +58,6 @@ public class FlyListeners implements Listener {
         PersistentDataContainer playerPDC = player.getPersistentDataContainer();
         Boolean flyEnabled = playerPDC.getOrDefault(flyStatus, PersistentDataType.BOOLEAN, false);
         if (flyEnabled) {
-            System.out.println("Fly is enabled");
             player.setAllowFlight(true);
         }
     }

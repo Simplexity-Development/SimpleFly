@@ -14,10 +14,11 @@ import java.util.List;
 
 public class FlySpeed implements TabExecutor {
     
-    private static MiniMessage miniMessage = SimpleFly.getMiniMessage();
+    private static final MiniMessage miniMessage = SimpleFly.getMiniMessage();
     private static final ArrayList<String> tabComplete = new ArrayList<>();
     private static final String setArg = "set";
     private static final String resetArg = "reset";
+    private static final String getArg = "get";
     
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
@@ -25,10 +26,8 @@ public class FlySpeed implements TabExecutor {
             case 0 -> {
                 if (CommandUtils.checkIfPlayerAndPerms(sender, Util.flySpeedPermission)) {
                     float flyspeed = ((Player) sender).getFlySpeed() * 10f;
-                    sender.sendMessage(miniMessage.deserialize(
-                            ConfigValues.flySpeedOwn,
-                            Placeholder.parsed("value", String.valueOf(flyspeed))
-                    ));
+                    Util.sendUserMessage(sender, ConfigValues.flySpeedOwn,
+                            String.valueOf(flyspeed), null);
                     return true;
                 } else {
                     return false;
@@ -39,48 +38,66 @@ public class FlySpeed implements TabExecutor {
                 if (argument.equalsIgnoreCase(resetArg)) {
                     if (CommandUtils.checkIfPlayerAndPerms(sender, Util.flySpeedPermission)) {
                         ((Player) sender).setFlySpeed(0.1f);
-                        sender.sendRichMessage(ConfigValues.flySpeedReset);
+                        Util.sendUserMessage(sender, ConfigValues.flySpeedReset);
                         return true;
                     }
                 }
                 if (argument.equalsIgnoreCase(setArg)) {
-                    sender.sendRichMessage(ConfigValues.notEnoughArguments);
+                    Util.sendUserMessage(sender, ConfigValues.notEnoughArguments);
                     return false;
                 }
             }
             case 2 -> {
                 String firstArgument = args[0];
                 String secondArgument = args[1];
-                Float flyspeed;
+                float flyspeed;
                 Player player;
                 if (firstArgument.equalsIgnoreCase(setArg)) {
                     try {
                         flyspeed = Float.parseFloat(secondArgument);
                         player = (Player) sender;
+                        if (flyspeed > ConfigValues.maxFlySpeed || flyspeed < ConfigValues.minFlySpeed) {
+                            player.sendMessage(miniMessage.deserialize(ConfigValues.notInRange,
+                                    Placeholder.parsed("min", String.valueOf(ConfigValues.minFlySpeed)),
+                                    Placeholder.parsed("max", String.valueOf(ConfigValues.maxFlySpeed))));
+                            return false;
+                        }
                         player.setFlySpeed(flyspeed / 10f);
-                        sender.sendRichMessage(ConfigValues.flySpeedSet);
+                        Util.sendUserMessage(player, ConfigValues.flySpeedSet,
+                                firstArgument, null);
                         return true;
                     } catch (NumberFormatException e) {
                         player = SimpleFly.getFlyServer().getPlayer(secondArgument);
                         if (player == null || !sender.hasPermission(Util.flySpeedOthersPermission)) {
-                            sender.sendRichMessage(ConfigValues.notANumber);
+                            Util.sendUserMessage(sender, ConfigValues.notANumber);
                             return false;
                         }
-                        sender.sendRichMessage(ConfigValues.notEnoughArguments);
+                        Util.sendUserMessage(sender, ConfigValues.notEnoughArguments);
                         return false;
                     }
                 }
                 if (firstArgument.equalsIgnoreCase(resetArg) && sender.hasPermission(Util.flySpeedOthersPermission)) {
                     player = SimpleFly.getFlyServer().getPlayer(secondArgument);
                     if (player == null) {
-                        sender.sendRichMessage(ConfigValues.notAPlayer);
+                        Util.sendUserMessage(sender, ConfigValues.notAPlayer);
                         return false;
                     }
                     player.setFlySpeed(0.1f);
-                    sender.sendMessage(miniMessage.deserialize(ConfigValues.flySpeedResetOther,
-                            Placeholder.component("player", player.displayName())));
-                    player.sendMessage(miniMessage.deserialize(ConfigValues.flySpeedResetByOther,
-                            Placeholder.component("initiator", sender.name())));
+                    Util.sendUserMessage(sender, ConfigValues.flySpeedResetOther,
+                            null, player);
+                    Util.sendUserMessage(player, ConfigValues.flySpeedResetByOther,
+                            null, sender);
+                    return true;
+                }
+                if (firstArgument.equalsIgnoreCase(getArg) && sender.hasPermission(Util.flySpeedOthersPermission)) {
+                    player = SimpleFly.getFlyServer().getPlayer(secondArgument);
+                    if (player == null) {
+                        Util.sendUserMessage(sender, ConfigValues.notAPlayer);
+                        return false;
+                    }
+                    flyspeed = player.getFlySpeed() * 10f;
+                    Util.sendUserMessage(sender, ConfigValues.flySpeedOther,
+                            String.valueOf(flyspeed), player);
                     return true;
                 }
                 return false;
@@ -92,19 +109,20 @@ public class FlySpeed implements TabExecutor {
                 if (firstArgument.equalsIgnoreCase(setArg) && sender.hasPermission(Util.flySpeedOthersPermission)) {
                     Player player = SimpleFly.getFlyServer().getPlayer(secondArgument);
                     if (player == null) {
-                        sender.sendRichMessage(ConfigValues.notAPlayer);
+                        Util.sendUserMessage(sender, ConfigValues.notAPlayer);
                         return false;
                     }
-                    Float flyspeed;
+                    float flyspeed;
                     try {
                         flyspeed = Float.parseFloat(thirdArgument);
                         player.setFlySpeed(flyspeed / 10f);
-                        sender.sendRichMessage(ConfigValues.flySpeedSetOther);
-                        player.sendMessage(miniMessage.deserialize(ConfigValues.flySpeedSetByOther,
-                                Placeholder.component("initiator", sender.name())));
+                        Util.sendUserMessage(sender, ConfigValues.flySpeedSetOther,
+                                thirdArgument, player);
+                        Util.sendUserMessage(player, ConfigValues.flySpeedSetByOther,
+                                thirdArgument, sender);
                         return true;
                     } catch (NumberFormatException e) {
-                        sender.sendRichMessage(ConfigValues.notANumber);
+                        Util.sendUserMessage(sender, ConfigValues.notANumber);
                         return false;
                     }
                 }
@@ -115,13 +133,15 @@ public class FlySpeed implements TabExecutor {
     }
     
     
-    
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        if (commandSender.hasPermission(Util.flySpeedPermission)) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        if (sender.hasPermission(Util.flySpeedPermission) && args.length == 1) {
             tabComplete.clear();
             tabComplete.add(setArg);
             tabComplete.add(resetArg);
+            if (sender.hasPermission(Util.flySpeedOthersPermission)) {
+                tabComplete.add(getArg);
+            }
             return tabComplete;
         }
         return null;
