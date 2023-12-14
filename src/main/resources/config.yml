@@ -1,0 +1,30 @@
+#Config
+"max-flyspeed": 8.0
+"min-flyspeed": -10.0
+# Where should flight persist? (flight won't disable due to these events)
+"session-persistent-flight" : true
+"world-change-persistent-flight" : true
+"respawn-persistent-flight" : true
+"gamemode-change-persistent-flight" : true
+# lang
+"papi-flight-enabled" : "[F]"
+"papi-flight-disabled" : ""
+"prefix" : "<green>[<yellow>SF</yellow>]</green> "
+"enabled" : "<green>enabled</green>"
+"disabled" : "<red>disabled</red>"
+"fly-other" : "<target>'s fly has been <value>"
+"fly-own" : "Your fly has been <value>"
+"fly-set-by-other" : "<green>Your fly has been <value> by <initiator></green>"
+"flyspeed-other" : "<grey><target>'s current flyspeed is <value></grey>"
+"flyspeed-own" : "<grey>Your flyspeed is currently set to <value></grey>"
+"flyspeed-set" : "<green>Your flyspeed has been set to <value></green>"
+"flyspeed-reset" : "<green>Your flyspeed has been reset</green>"
+"flyspeed-set-other" : "<green>You set <target>'s flyspeed to <value></green>"
+"flyspeed-reset-other" : "<green><target>'s flyspeed has been reset</green>"
+"flyspeed-set-by-other" : "<green>Your flyspeed has been set to <value> by <initiator></green>"
+"flyspeed-reset-by-other" : "<green>Your flyspeed has been reset by <initiator></green>"
+"not-a-player" : "<red>That is not a valid player. Please check your spelling and try again</red>"
+"no-permission" : "<red>You do not have permission to run this command</red>"
+"must-be-player" : "<red>You must be a player to run this command</red>"
+"not-enough-arguments" : "<red>You did not provide enough arguments. Please check your syntax and try again</red>"
+"not-a-number" : "<red>Sorry, you did not enter a valid flyspeed, please try again"
