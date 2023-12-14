@@ -26,7 +26,7 @@ public class FlySpeed implements TabExecutor {
             case 0 -> {
                 if (CommandUtils.checkIfPlayerAndPerms(sender, Util.flySpeedPermission)) {
                     float flyspeed = ((Player) sender).getFlySpeed() * 10f;
-                    Util.sendUserMessage(sender, ConfigValues.flySpeedOwn,
+                    Util.sendUserMessage(sender, ConfigValues.flySpeedGetOwn,
                             String.valueOf(flyspeed), null);
                     return true;
                 } else {
@@ -38,7 +38,7 @@ public class FlySpeed implements TabExecutor {
                 if (argument.equalsIgnoreCase(resetArg)) {
                     if (CommandUtils.checkIfPlayerAndPerms(sender, Util.flySpeedPermission)) {
                         ((Player) sender).setFlySpeed(0.1f);
-                        Util.sendUserMessage(sender, ConfigValues.flySpeedReset);
+                        Util.sendUserMessage(sender, ConfigValues.flySpeedResetOwn);
                         return true;
                     }
                 }
@@ -63,13 +63,13 @@ public class FlySpeed implements TabExecutor {
                             return false;
                         }
                         player.setFlySpeed(flyspeed / 10f);
-                        Util.sendUserMessage(player, ConfigValues.flySpeedSet,
+                        Util.sendUserMessage(player, ConfigValues.flySpeedSetOwn,
                                 firstArgument, null);
                         return true;
                     } catch (NumberFormatException e) {
                         player = SimpleFly.getFlyServer().getPlayer(secondArgument);
                         if (player == null || !sender.hasPermission(Util.flySpeedOthersPermission)) {
-                            Util.sendUserMessage(sender, ConfigValues.notANumber);
+                            Util.sendUserMessage(sender, ConfigValues.invalidNumber);
                             return false;
                         }
                         Util.sendUserMessage(sender, ConfigValues.notEnoughArguments);
@@ -79,7 +79,7 @@ public class FlySpeed implements TabExecutor {
                 if (firstArgument.equalsIgnoreCase(resetArg) && sender.hasPermission(Util.flySpeedOthersPermission)) {
                     player = SimpleFly.getFlyServer().getPlayer(secondArgument);
                     if (player == null) {
-                        Util.sendUserMessage(sender, ConfigValues.notAPlayer);
+                        Util.sendUserMessage(sender, ConfigValues.invalidPlayer);
                         return false;
                     }
                     player.setFlySpeed(0.1f);
@@ -92,11 +92,11 @@ public class FlySpeed implements TabExecutor {
                 if (firstArgument.equalsIgnoreCase(getArg) && sender.hasPermission(Util.flySpeedOthersPermission)) {
                     player = SimpleFly.getFlyServer().getPlayer(secondArgument);
                     if (player == null) {
-                        Util.sendUserMessage(sender, ConfigValues.notAPlayer);
+                        Util.sendUserMessage(sender, ConfigValues.invalidPlayer);
                         return false;
                     }
                     flyspeed = player.getFlySpeed() * 10f;
-                    Util.sendUserMessage(sender, ConfigValues.flySpeedOther,
+                    Util.sendUserMessage(sender, ConfigValues.flySpeedGetOther,
                             String.valueOf(flyspeed), player);
                     return true;
                 }
@@ -109,7 +109,7 @@ public class FlySpeed implements TabExecutor {
                 if (firstArgument.equalsIgnoreCase(setArg) && sender.hasPermission(Util.flySpeedOthersPermission)) {
                     Player player = SimpleFly.getFlyServer().getPlayer(secondArgument);
                     if (player == null) {
-                        Util.sendUserMessage(sender, ConfigValues.notAPlayer);
+                        Util.sendUserMessage(sender, ConfigValues.invalidPlayer);
                         return false;
                     }
                     float flyspeed;
@@ -122,7 +122,7 @@ public class FlySpeed implements TabExecutor {
                                 thirdArgument, sender);
                         return true;
                     } catch (NumberFormatException e) {
-                        Util.sendUserMessage(sender, ConfigValues.notANumber);
+                        Util.sendUserMessage(sender, ConfigValues.invalidNumber);
                         return false;
                     }
                 }
@@ -143,6 +143,9 @@ public class FlySpeed implements TabExecutor {
                 tabComplete.add(getArg);
             }
             return tabComplete;
+        }
+        if (args.length == 3) {
+            return List.of("");
         }
         return null;
     }

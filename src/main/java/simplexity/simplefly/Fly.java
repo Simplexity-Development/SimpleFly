@@ -15,10 +15,10 @@ public class Fly implements TabExecutor {
         if (args.length == 0) {
             if (CommandUtils.checkIfPlayerAndPerms(sender, Util.flyPermission)) {
                 if (FlyLogic.flyEnabled((Player) sender)){
-                    Util.sendUserMessage(sender, ConfigValues.flyOwn, ConfigValues.enabled, null);
+                    Util.sendUserMessage(sender, ConfigValues.flySetOwn, ConfigValues.enabled, null);
                     return true;
                 } else {
-                    Util.sendUserMessage(sender, ConfigValues.flyOwn, ConfigValues.disabled, null);
+                    Util.sendUserMessage(sender, ConfigValues.flySetOwn, ConfigValues.disabled, null);
                     return true;
                 }
             } else {
@@ -28,15 +28,15 @@ public class Fly implements TabExecutor {
         if (!sender.hasPermission(Util.flyOthersPermission)) return false;
         Player player = SimpleFly.getFlyServer().getPlayer(args[0]);
         if (player == null) {
-            Util.sendUserMessage(sender, ConfigValues.notAPlayer);
+            Util.sendUserMessage(sender, ConfigValues.invalidPlayer);
             return false;
         }
         if (FlyLogic.flyEnabled(player)){
-            Util.sendUserMessage(sender, ConfigValues.flyOther, ConfigValues.enabled, player);
+            Util.sendUserMessage(sender, ConfigValues.flySetOther, ConfigValues.enabled, player);
             Util.sendUserMessage(player, ConfigValues.flySetByOther, ConfigValues.enabled, sender);
             return true;
         } else {
-            Util.sendUserMessage(sender, ConfigValues.flyOther, ConfigValues.disabled, player);
+            Util.sendUserMessage(sender, ConfigValues.flySetOther, ConfigValues.disabled, player);
             Util.sendUserMessage(player, ConfigValues.flySetByOther, ConfigValues.disabled, sender);
             return true;
         }

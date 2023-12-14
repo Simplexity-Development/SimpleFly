@@ -28,7 +28,7 @@ public class FlyListeners implements Listener {
                 if (player.getFallDistance() > 0f) {
                     player.setFlying(true);
                 }
-                Util.sendUserMessage(player, ConfigValues.flyOwn, ConfigValues.enabled, null);
+                Util.sendUserMessage(player, ConfigValues.flySetOwn, ConfigValues.enabled, null);
                 return;
             }
             if (flyEnabled && !player.hasPermission(Util.flyPermission)) {
