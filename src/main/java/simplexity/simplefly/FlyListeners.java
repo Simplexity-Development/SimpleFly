@@ -13,7 +13,9 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 public class FlyListeners implements Listener {
+    
     private static final NamespacedKey flyStatus = Util.flyStatus;
+    
     @EventHandler
     public void onPlayerLogin(PlayerJoinEvent joinEvent) {
         if (!ConfigValues.sessionPersistentFlight) {
@@ -77,6 +79,6 @@ public class FlyListeners implements Listener {
             }
         }, 10);
     }
-
-
+    
+    
 }

@@ -36,5 +36,8 @@ error:
   no-permission : "<red>You do not have permission to run this command</red>"
   must-be-player : "<red>You must be a player to run this command</red>"
   not-enough-arguments : "<red>You did not provide enough arguments. Please check your syntax and try again</red>"
-  invalid-number : "<red>Sorry, you did not enter a valid flyspeed, please try again"
-  not-in-range : "<red>Sorry, you must provide a number between <min> and <max>"
+  invalid-number : "<red>Sorry, you did not enter a valid flyspeed, please try again</red>"
+  not-in-range : "<red>Sorry, you must provide a number between <min> and <max></red>"
+  invalid-command : "<red>Sorry, that subcommand is invalid. Please check your syntax and try again</red>"
+plugin-messages:
+  config-reloaded: "<gold>Config Reloaded</gold>"

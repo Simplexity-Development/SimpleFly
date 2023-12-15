@@ -10,11 +10,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class Fly implements TabExecutor {
+    
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (args.length == 0) {
             if (CommandUtils.checkIfPlayerAndPerms(sender, Util.flyPermission)) {
-                if (FlyLogic.flyEnabled((Player) sender)){
+                if (FlyLogic.flyEnabled((Player) sender)) {
                     Util.sendUserMessage(sender, ConfigValues.flySetOwn, ConfigValues.enabled, null);
                     return true;
                 } else {
@@ -31,7 +32,7 @@ public class Fly implements TabExecutor {
             Util.sendUserMessage(sender, ConfigValues.invalidPlayer);
             return false;
         }
-        if (FlyLogic.flyEnabled(player)){
+        if (FlyLogic.flyEnabled(player)) {
             Util.sendUserMessage(sender, ConfigValues.flySetOther, ConfigValues.enabled, player);
             Util.sendUserMessage(player, ConfigValues.flySetByOther, ConfigValues.enabled, sender);
             return true;

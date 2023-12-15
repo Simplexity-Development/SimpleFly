@@ -7,6 +7,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 
 public class Util {
+    
     private static final MiniMessage miniMessage = SimpleFly.getMiniMessage();
     
     public static final NamespacedKey flyStatus = new NamespacedKey(SimpleFly.getInstance(), "flystatus");
@@ -14,6 +15,7 @@ public class Util {
     public static final String flySpeedPermission = "simplefly.flyspeed";
     public static final String flyOthersPermission = "simplefly.others.fly";
     public static final String flySpeedOthersPermission = "simplefly.others.flyspeed";
+    
     public static void sendUserMessage(CommandSender sender, String message) {
         if (message.isEmpty()) return;
         sender.sendMessage(miniMessage.deserialize(message));
@@ -33,7 +35,4 @@ public class Util {
                 Placeholder.component("initiator", parsedName),
                 Placeholder.component("target", parsedName)));
     }
-    
-    
-
 }

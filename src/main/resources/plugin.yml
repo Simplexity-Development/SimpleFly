@@ -15,22 +15,26 @@ commands:
     usage: /flyspeed [set|reset] <player> <speed>
     aliases: [sflyspeed]
     permission-message: You don't have permission to use this command.
+  flyreload:
+    permission: simplefly.reload
+    description: reloads the plugin
+    aliases: [sflyreload]
+    permission-message: You don't have permission to use this command.
 permissions:
   simplefly.fly:
     default: op
     description: allows toggling flight
-    children:
-      simplefly.others.fly: true
   simplefly.others.fly:
     default: op
     description: allows toggling flight for others
   simplefly.flyspeed:
     default: op
     description: allows changing fly speed
-    children:
-      simplefly.others.flyspeed: true
   simplefly.others.flyspeed:
     default: op
     description: allows changing fly speed for others
+  simplefly.reload:
+    default: op
+    description: allows reloading the plugin
 
 

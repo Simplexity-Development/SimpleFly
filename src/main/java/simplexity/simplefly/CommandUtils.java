@@ -4,6 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CommandUtils {
+    
     public static boolean checkIfPlayerAndPerms(CommandSender sender, String permission) {
         if (!(sender instanceof Player player)) {
             sender.sendRichMessage(ConfigValues.mustBePlayer);
@@ -15,5 +16,5 @@ public class CommandUtils {
         }
         return true;
     }
-
+    
 }

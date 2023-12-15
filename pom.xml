@@ -6,7 +6,7 @@
 
   <groupId>simplexity</groupId>
   <artifactId>SimpleFly</artifactId>
-  <version>0.0.0</version>
+  <version>0.0.1</version>
   <packaging>jar</packaging>
 
   <name>SimpleFly</name>
@@ -66,11 +66,6 @@
           <artifactId>paper-api</artifactId>
           <version>1.20.2-R0.1-SNAPSHOT</version>
           <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>dev.jorel</groupId>
-          <artifactId>commandapi-bukkit-shade</artifactId>
-          <version>9.2.0</version>
       </dependency>
   </dependencies>
 </project>

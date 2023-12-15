@@ -9,7 +9,8 @@ public class ConfigValues {
     public static String papiFlightEnabled, papiFlightDisabled, prefix, enabled, disabled, flySetOther,
             flySetOwn, flySetByOther, flySpeedGetOther, flySpeedGetOwn, flySpeedSetOwn, flySpeedResetOwn,
             flySpeedSetOther, flySpeedResetOther, flySpeedSetByOther, flySpeedResetByOther,
-            invalidPlayer, noPermission, mustBePlayer, notEnoughArguments, invalidNumber, notInRange;
+            invalidPlayer, noPermission, mustBePlayer, notEnoughArguments, invalidNumber, notInRange,
+            invalidCommand, configReloaded;
     
     public static float maxFlySpeed, minFlySpeed;
     public static boolean sessionPersistentFlight, worldChangePersistentFlight,
@@ -57,6 +58,8 @@ public class ConfigValues {
         notEnoughArguments = config.getString("error.not-enough-arguments");
         invalidNumber = config.getString("error.invalid-number");
         notInRange = config.getString("error.not-in-range");
+        invalidCommand = config.getString("error.invalid-command");
+        configReloaded = config.getString("plugin-messages.config-reloaded");
     }
 
 }
