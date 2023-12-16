@@ -1,7 +1,8 @@
-package simplexity.simplefly;
+package simplexity.simplefly.commands;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import simplexity.simplefly.ConfigValues;
 
 public class CommandUtils {
     

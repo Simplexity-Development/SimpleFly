@@ -1,4 +1,4 @@
-package simplexity.simplefly;
+package simplexity.simplefly.commands;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -8,6 +8,9 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import simplexity.simplefly.ConfigValues;
+import simplexity.simplefly.SimpleFly;
+import simplexity.simplefly.Util;
 
 import java.util.ArrayList;
 import java.util.List;

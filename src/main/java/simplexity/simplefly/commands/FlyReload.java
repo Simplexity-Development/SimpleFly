@@ -1,9 +1,11 @@
-package simplexity.simplefly;
+package simplexity.simplefly.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import simplexity.simplefly.ConfigValues;
+import simplexity.simplefly.Util;
 
 public class FlyReload implements CommandExecutor {
     
