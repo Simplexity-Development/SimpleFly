@@ -8,24 +8,27 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import simplexity.simplefly.ConfigValues;
+import simplexity.simplefly.config.ConfigValues;
 import simplexity.simplefly.SimpleFly;
+import simplexity.simplefly.Constants;
 import simplexity.simplefly.Util;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FlySpeed implements TabExecutor {
+public class FlySpeed {
     
     private static final MiniMessage miniMessage = SimpleFly.getMiniMessage();
     private static final ArrayList<String> tabComplete = new ArrayList<>();
     private static final String setArg = "set";
     private static final String resetArg = "reset";
     private static final String getArg = "get";
-    
+
+
+    /*
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        boolean hasOtherPermission = sender.hasPermission(Util.flyOthersPermission);
+        boolean hasOtherPermission = sender.hasPermission(Constants.FLY_OTHERS_PERMISSION);
         switch (args.length) {
             case 0 -> {
                 getOwnFlySpeed(sender);
@@ -159,7 +162,7 @@ public class FlySpeed implements TabExecutor {
                     secondArgument, null);
         } catch (NumberFormatException e) {
             player = SimpleFly.getFlyServer().getPlayer(secondArgument);
-            if (player == null || !sender.hasPermission(Util.flySpeedOthersPermission)) {
+            if (player == null || !sender.hasPermission(Constants.FLY_SPEED_OTHERS_PERMISSION)) {
                 Util.sendUserMessage(sender, ConfigValues.invalidNumber);
                 return;
             }
@@ -168,14 +171,14 @@ public class FlySpeed implements TabExecutor {
     }
     
     private void resetOwnFlySpeed(CommandSender sender) {
-        if (CommandUtils.checkIfPlayerAndPerms(sender, Util.flySpeedPermission)) {
+        if (CommandUtils.checkIfPlayerAndPerms(sender, Constants.FLY_SPEED_PERMISSION)) {
             ((Player) sender).setFlySpeed(0.1f);
             Util.sendUserMessage(sender, ConfigValues.flySpeedResetOwn);
         }
     }
     
     private void getOwnFlySpeed(CommandSender sender) {
-        if (CommandUtils.checkIfPlayerAndPerms(sender, Util.flySpeedPermission)) {
+        if (CommandUtils.checkIfPlayerAndPerms(sender, Constants.FLY_SPEED_PERMISSION)) {
             float flyspeed = ((Player) sender).getFlySpeed() * 10f;
             Util.sendUserMessage(sender, ConfigValues.flySpeedGetOwn,
                     String.valueOf(flyspeed), null);
@@ -186,11 +189,11 @@ public class FlySpeed implements TabExecutor {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command
             command, @NotNull String s, @NotNull String[] args) {
-        if (sender.hasPermission(Util.flySpeedPermission) && args.length == 1) {
+        if (sender.hasPermission(Constants.FLY_SPEED_PERMISSION) && args.length == 1) {
             tabComplete.clear();
             tabComplete.add(setArg);
             tabComplete.add(resetArg);
-            if (sender.hasPermission(Util.flySpeedOthersPermission)) {
+            if (sender.hasPermission(Constants.FLY_SPEED_OTHERS_PERMISSION)) {
                 tabComplete.add(getArg);
             }
             return tabComplete;
@@ -200,4 +203,6 @@ public class FlySpeed implements TabExecutor {
         }
         return null;
     }
+
+     */
 }
