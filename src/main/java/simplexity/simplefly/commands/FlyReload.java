@@ -1,19 +1,24 @@
 package simplexity.simplefly.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.NotNull;
-import simplexity.simplefly.config.ConfigValues;
-import simplexity.simplefly.Util;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
+
+import simplexity.simplefly.Constants;
+import simplexity.simplefly.config.ConfigHandler;
 import simplexity.simplefly.config.LocaleMessage;
 
-public class FlyReload implements CommandExecutor {
-    
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        ConfigValues.reloadConfigValues();
-        sender.sendRichMessage(LocaleMessage.FEEDBACK_CONFIG_RELOADED.getMessage());
-        return false;
+public class FlyReload {
+
+    public static LiteralArgumentBuilder<CommandSourceStack> createCommand() {
+        return Commands.literal("flyreload").requires(ctx -> ctx.getSender().hasPermission(Constants.FLY_RELOAD))
+                .executes(ctx -> {
+                    ConfigHandler.reloadConfigValues();
+                    ctx.getSource().getSender().sendRichMessage(LocaleMessage.FEEDBACK_CONFIG_RELOADED.getMessage());
+                    return Command.SINGLE_SUCCESS;
+                });
     }
+    
+
 }

@@ -12,5 +12,6 @@ public class Constants {
     public static final String FLY_SPEED_PERMISSION = "simplefly.flyspeed";
     public static final String FLY_OTHERS_PERMISSION = "simplefly.others.fly";
     public static final String FLY_SPEED_OTHERS_PERMISSION = "simplefly.others.flyspeed";
+    public static final String FLY_RELOAD = "simplefly.reload";
 
 }

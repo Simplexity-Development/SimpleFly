@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import simplexity.simplefly.config.ConfigValues;
+import simplexity.simplefly.config.ConfigHandler;
 import simplexity.simplefly.config.LocaleMessage;
 
 public class FlyListeners implements Listener {
@@ -21,7 +21,7 @@ public class FlyListeners implements Listener {
 
     @EventHandler
     public void onPlayerLogin(PlayerJoinEvent joinEvent) {
-        if (!ConfigValues.sessionPersistentFlight) {
+        if (!ConfigHandler.sessionPersistentFlight) {
             return;
         }
         Player player = joinEvent.getPlayer();
@@ -42,7 +42,7 @@ public class FlyListeners implements Listener {
 
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent worldEvent) {
-        if (!ConfigValues.worldChangePersistentFlight) return;
+        if (!ConfigHandler.worldChangePersistentFlight) return;
         Player player = worldEvent.getPlayer();
         PersistentDataContainer playerPDC = player.getPersistentDataContainer();
         Boolean flyEnabled = playerPDC.getOrDefault(flyStatus, PersistentDataType.BOOLEAN, false);
@@ -53,7 +53,7 @@ public class FlyListeners implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent respawnEvent) {
-        if (!ConfigValues.respawnPersistentFlight) return;
+        if (!ConfigHandler.respawnPersistentFlight) return;
         Player player = respawnEvent.getPlayer();
         PersistentDataContainer playerPDC = player.getPersistentDataContainer();
         Boolean flyEnabled = playerPDC.getOrDefault(flyStatus, PersistentDataType.BOOLEAN, false);
@@ -64,7 +64,7 @@ public class FlyListeners implements Listener {
 
     @EventHandler
     public void onGamemodeChange(PlayerGameModeChangeEvent gameModeChangeEvent) {
-        if (!ConfigValues.gamemodeChangePersistentFlight) return;
+        if (!ConfigHandler.gamemodeChangePersistentFlight) return;
         Player player = gameModeChangeEvent.getPlayer();
         PersistentDataContainer playerPDC = player.getPersistentDataContainer();
         Bukkit.getScheduler().runTaskLater(SimpleFly.getInstance(), () -> {

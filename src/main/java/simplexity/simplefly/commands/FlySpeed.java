@@ -1,25 +1,13 @@
 package simplexity.simplefly.commands;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import simplexity.simplefly.config.ConfigValues;
 import simplexity.simplefly.SimpleFly;
-import simplexity.simplefly.Constants;
-import simplexity.simplefly.Util;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class FlySpeed {
     
     private static final MiniMessage miniMessage = SimpleFly.getMiniMessage();
-    private static final ArrayList<String> tabComplete = new ArrayList<>();
     private static final String setArg = "set";
     private static final String resetArg = "reset";
     private static final String getArg = "get";

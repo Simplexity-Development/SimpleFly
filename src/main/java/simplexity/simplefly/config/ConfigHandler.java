@@ -4,7 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.slf4j.Logger;
 import simplexity.simplefly.SimpleFly;
 
-public class ConfigValues {
+public class ConfigHandler {
     private static final Logger logger =  SimpleFly.getInstance().getSLF4JLogger();
     
     public static float maxFlySpeed, minFlySpeed;

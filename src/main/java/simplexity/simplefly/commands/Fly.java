@@ -40,10 +40,10 @@ public class Fly {
                         .requires(ctx -> ctx.getSender().hasPermission(Constants.FLY_OTHERS_PERMISSION))
                         .then(
                                 Commands.argument("player", ArgumentTypes.player())
-                                        .suggests(SuggestionUtils::suggestPlayers))
-                        .executes(Fly::executeOnOther)
-                        .then(Commands.literal("enable").executes(ctx -> executeOnOtherWithArg(ctx, true)))
-                        .then(Commands.literal("disable").executes(ctx -> executeOnOtherWithArg(ctx, false))));
+                                        .suggests(SuggestionUtils::suggestPlayers)
+                                        .executes(Fly::executeOnOther)
+                                        .then(Commands.literal("enable").executes(ctx -> executeOnOtherWithArg(ctx, true)))
+                                        .then(Commands.literal("disable").executes(ctx -> executeOnOtherWithArg(ctx, false)))));
     }
 
     private static boolean canExecute(CommandSourceStack css) {
@@ -84,6 +84,7 @@ public class Fly {
         return Command.SINGLE_SUCCESS;
     }
 
+    @SuppressWarnings("SameReturnValue")
     private static int executeOnOtherWithArg(CommandContext<CommandSourceStack> ctx, boolean shouldEnable) throws CommandSyntaxException {
         CommandSender sender = ctx.getSource().getSender();
         PlayerSelectorArgumentResolver playerArg = ctx.getArgument("player", PlayerSelectorArgumentResolver.class);
@@ -108,7 +109,7 @@ public class Fly {
         } else {
             enabledString = LocaleMessage.DISABLED.getMessage();
         }
-        sender.sendRichMessage(LocaleMessage.FLY_SET_MANY_OTHER_ARG.getMessage(),
+        sender.sendRichMessage(LocaleMessage.FLY_SET_OTHER_MANY_ARG.getMessage(),
                 Placeholder.parsed("value", enabledString),
                 Placeholder.parsed("count", String.valueOf(modified)));
         return Command.SINGLE_SUCCESS;
