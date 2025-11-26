@@ -27,28 +27,21 @@ public class Fly {
 
     public static LiteralArgumentBuilder<CommandSourceStack> createCommand() {
         return Commands.literal("fly")
-                .requires(Fly::canExecute)
+                .requires(css -> css.getSender().hasPermission(Constants.FLY_PERMISSION))
                 .executes(Fly::execute)
-                .then(
-                        Commands.literal("enable").executes(
-                                ctx -> executeWithArg(ctx, true)
-                        ))
+                .then(Commands.literal("enable").executes(
+                        ctx -> executeWithArg(ctx, true))
+                        .then(Commands.argument("player", ArgumentTypes.players())
+                                .requires(ctx -> ctx.getSender().hasPermission(Constants.FLY_OTHERS_PERMISSION))
+                                .suggests(SuggestionUtils::suggestPlayers)
+                                .executes(ctx-> executeOnOtherWithArg(ctx, true)))
+                )
                 .then(Commands.literal("disable").executes(
-                        ctx -> executeWithArg(ctx, false)
-                ))
-                .then(Commands.literal("admin")
-                        .requires(ctx -> ctx.getSender().hasPermission(Constants.FLY_OTHERS_PERMISSION))
-                        .then(
-                                Commands.argument("player", ArgumentTypes.player())
-                                        .suggests(SuggestionUtils::suggestPlayers)
-                                        .executes(Fly::executeOnOther)
-                                        .then(Commands.literal("enable").executes(ctx -> executeOnOtherWithArg(ctx, true)))
-                                        .then(Commands.literal("disable").executes(ctx -> executeOnOtherWithArg(ctx, false)))));
-    }
-
-    private static boolean canExecute(CommandSourceStack css) {
-        if (!(css.getSender() instanceof Player player)) return false;
-        return player.hasPermission(Constants.FLY_PERMISSION);
+                        ctx -> executeWithArg(ctx, false))
+                        .then(Commands.argument("player", ArgumentTypes.players())
+                                .requires(ctx -> ctx.getSender().hasPermission(Constants.FLY_OTHERS_PERMISSION))
+                                .suggests(SuggestionUtils::suggestPlayers)
+                                .executes(ctx-> executeOnOtherWithArg(ctx, false))));
     }
 
     private static int execute(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
@@ -64,23 +57,6 @@ public class Fly {
         if (!(sender instanceof Player player)) throw Exceptions.ERROR_MUST_BE_PLAYER.create();
         FlyLogic.setFlyStatus(player, enableFlight);
         sendOwnMessage(enableFlight, player);
-        return Command.SINGLE_SUCCESS;
-    }
-
-    private static int executeOnOther(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-        CommandSender sender = ctx.getSource().getSender();
-        PlayerSelectorArgumentResolver playerArg = ctx.getArgument("player", PlayerSelectorArgumentResolver.class);
-        List<Player> targets = playerArg.resolve(ctx.getSource());
-        int size = targets.size();
-        if (size == 0) {
-            throw Exceptions.NO_USERS_FOUND.create();
-        } else if (size > 1) {
-            throw Exceptions.MUST_SPECIFY_FLY_STATE.create();
-        }
-        Player player = targets.getFirst();
-        boolean flyEnabled = FlyLogic.flyToggle(player);
-        player.sendMessage(getParsedComponent(flyEnabled, player, sender, LocaleMessage.FLY_SET_BY_OTHER.getMessage()));
-        sender.sendMessage(getParsedComponent(flyEnabled, player, sender, LocaleMessage.FLY_SET_OTHER.getMessage()));
         return Command.SINGLE_SUCCESS;
     }
 

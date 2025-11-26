@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.concurrent.CompletableFuture;
 
+@SuppressWarnings("UnstableApiUsage")
 public class SuggestionUtils {
     public static CompletableFuture<Suggestions> suggestPlayers(CommandContext<?> context, SuggestionsBuilder builder) {
         CommandSourceStack css = (CommandSourceStack) context.getSource();

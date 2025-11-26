@@ -9,7 +9,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class FlyLogic {
     
-    private static final NamespacedKey flyStatus = Constants.FLY_STATUS;
+    private static final NamespacedKey flyStatus = Constants.FLY_STATUS_KEY;
     
     public static boolean flyToggle(Player player) {
         PersistentDataContainer playerPDC = player.getPersistentDataContainer();
