@@ -35,7 +35,7 @@ public class FlyListeners implements Listener {
                 return;
             }
             if (flyEnabled && !player.hasPermission(Constants.FLY_PERMISSION)) {
-                FlyLogic.flyDisable(player);
+                FlyLogic.disablePDC(player);
             }
         }, 10);
     }

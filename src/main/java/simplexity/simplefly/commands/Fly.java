@@ -73,42 +73,25 @@ public class Fly {
             sender.sendMessage(getParsedComponent(shouldEnable, player, sender, LocaleMessage.FLY_SET_OTHER.getMessage()));
             return Command.SINGLE_SUCCESS;
         }
-        int modified = 0;
         for (Player player : targets) {
             FlyLogic.setFlyStatus(player, shouldEnable);
             player.sendMessage(getParsedComponent(shouldEnable, player, sender, LocaleMessage.FLY_SET_BY_OTHER.getMessage()));
-            modified++;
         }
-        String enabledString;
-        if (shouldEnable) {
-            enabledString = LocaleMessage.ENABLED.getMessage();
-        } else {
-            enabledString = LocaleMessage.DISABLED.getMessage();
-        }
+        String enabledString = shouldEnable ? LocaleMessage.ENABLED.getMessage() : LocaleMessage.DISABLED.getMessage();
         sender.sendRichMessage(LocaleMessage.FLY_SET_OTHER_MANY_ARG.getMessage(),
                 Placeholder.parsed("value", enabledString),
-                Placeholder.parsed("count", String.valueOf(modified)));
+                Placeholder.parsed("count", String.valueOf(targets.size())));
         return Command.SINGLE_SUCCESS;
     }
 
     private static void sendOwnMessage(boolean flyEnabled, Player player) {
-        String enabledString;
-        if (flyEnabled) {
-            enabledString = LocaleMessage.ENABLED.getMessage();
-        } else {
-            enabledString = LocaleMessage.DISABLED.getMessage();
-        }
+        String enabledString = flyEnabled ? LocaleMessage.ENABLED.getMessage() : LocaleMessage.DISABLED.getMessage();
         player.sendRichMessage(LocaleMessage.FLY_SET_OWN.getMessage(),
                 Placeholder.parsed("value", enabledString));
     }
 
     private static Component getParsedComponent(boolean flyEnabled, Player target, CommandSender source, String message) {
-        String enabledString;
-        if (flyEnabled) {
-            enabledString = LocaleMessage.ENABLED.getMessage();
-        } else {
-            enabledString = LocaleMessage.DISABLED.getMessage();
-        }
+        String enabledString = flyEnabled ? LocaleMessage.ENABLED.getMessage() : LocaleMessage.DISABLED.getMessage();
         Component targetName = target.displayName();
         Component senderName;
         if (source instanceof Player player) {
