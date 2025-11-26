@@ -41,6 +41,10 @@ public class FlyLogic {
         player.setFlying(false);
     }
 
+    public static void disablePDC(Player player){
+        player.getPersistentDataContainer().set(flyStatus, PersistentDataType.BOOLEAN, false);
+    }
+
     private static boolean willFall(Player player){
         Location location = player.getLocation();
         Block blockBelow = location.clone().add(0, -1, 0).getBlock();
