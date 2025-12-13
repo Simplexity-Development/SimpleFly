@@ -1,0 +1,5 @@
+name: SimpleFly
+version: '${project.version}'
+main: simplexity.simplefly.SimpleFly
+api-version: '1.20'
+

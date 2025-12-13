@@ -1,203 +1,159 @@
 package simplexity.simplefly.commands;
 
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import simplexity.simplefly.ConfigValues;
+import simplexity.simplefly.Constants;
 import simplexity.simplefly.SimpleFly;
-import simplexity.simplefly.Util;
+import simplexity.simplefly.config.ConfigHandler;
+import simplexity.simplefly.config.LocaleMessage;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class FlySpeed implements TabExecutor {
-    
+@SuppressWarnings("UnstableApiUsage")
+public class FlySpeed {
+
     private static final MiniMessage miniMessage = SimpleFly.getMiniMessage();
-    private static final ArrayList<String> tabComplete = new ArrayList<>();
-    private static final String setArg = "set";
-    private static final String resetArg = "reset";
-    private static final String getArg = "get";
-    
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        boolean hasOtherPermission = sender.hasPermission(Util.flyOthersPermission);
-        switch (args.length) {
-            case 0 -> {
-                getOwnFlySpeed(sender);
-                return true;
-            }
-            case 1 -> {
-                switch (args[0]) {
-                    case setArg -> {
-                        Util.sendUserMessage(sender, ConfigValues.notEnoughArguments);
-                        return false;
-                    }
-                    case getArg -> {
-                        getOwnFlySpeed(sender);
-                        return true;
-                    }
-                    case resetArg -> {
-                        resetOwnFlySpeed(sender);
-                        return true;
-                    }
-                    default -> Util.sendUserMessage(sender, ConfigValues.invalidCommand);
-                }
-            }
-            case 2 -> {
-                Player player = SimpleFly.getFlyServer().getPlayer(args[1]);
-                switch (args[0]) {
-                    case setArg -> {
-                        if (player == null || !hasOtherPermission) {
-                            setOwnSpeed(sender, args);
-                            return true;
-                        } else {
-                            Util.sendUserMessage(sender, ConfigValues.notEnoughArguments);
-                            return false;
-                        }
-                    }
-                    case getArg -> {
-                        if (player == null || !hasOtherPermission) {
-                            Util.sendUserMessage(sender, ConfigValues.invalidCommand);
-                            return false;
-                        } else {
-                            getOtherFlySpeed(sender, args);
-                            return true;
-                        }
-                    }
-                    case resetArg -> {
-                        if (player == null || !hasOtherPermission) {
-                            Util.sendUserMessage(sender, ConfigValues.invalidCommand);
-                            return true;
-                        } else {
-                            resetOtherFlySpeed(sender, args);
-                            return true;
-                        }
-                    }
-                    default -> Util.sendUserMessage(sender, ConfigValues.invalidCommand);
-                }
-            }
-            case 3 -> {
-                if (args[0].equals(setArg) && hasOtherPermission) {
-                    setOtherPlayerSpeed(sender, args);
-                    return true;
-                }
-                Util.sendUserMessage(sender, ConfigValues.invalidCommand);
-            }
-        }
-        return false;
+
+    public static LiteralArgumentBuilder<CommandSourceStack> createCommand() {
+        return Commands.literal("flyspeed")
+                .requires(src -> src.getSender().hasPermission(Constants.FLY_SPEED_PERMISSION))
+                .then(Commands.literal("get")
+                        .executes(FlySpeed::getOwnSpeed)
+                        .then(Commands.argument("target", ArgumentTypes.player())
+                                .executes(FlySpeed::getOtherSpeed)
+                        )
+                )
+                .then(Commands.literal("reset")
+                        .executes(FlySpeed::resetOwnSpeed)
+                        .then(Commands.argument("targets", ArgumentTypes.players())
+                                .requires(css -> css.getSender().hasPermission(Constants.FLY_SPEED_OTHERS_PERMISSION))
+                                .executes(FlySpeed::resetOtherSpeed)
+                        )
+                )
+                .then(Commands.literal("set")
+                        .then(Commands.argument("speed",
+                                        FloatArgumentType.floatArg(ConfigHandler.getInstance().getMinFlySpeed(),
+                                                ConfigHandler.getInstance().getMaxFlySpeed()))
+                                .executes(FlySpeed::setOwnSpeed)
+                                .then(Commands.argument("targets", ArgumentTypes.players())
+                                        .requires(css -> css.getSender().hasPermission(Constants.FLY_SPEED_OTHERS_PERMISSION))
+                                        .executes(FlySpeed::setOtherSpeed)
+                                )
+                        )
+                );
+
     }
-    
-    
-    private void setOtherPlayerSpeed(CommandSender sender, String[] args) {
-        String firstArgument = args[0];
-        String secondArgument = args[1];
-        String thirdArgument = args[2];
-        if (firstArgument.equalsIgnoreCase(setArg)) {
-            Player player = SimpleFly.getFlyServer().getPlayer(secondArgument);
-            if (player == null) {
-                Util.sendUserMessage(sender, ConfigValues.invalidPlayer);
-                return;
-            }
-            float flyspeed;
-            try {
-                flyspeed = Float.parseFloat(thirdArgument);
-                player.setFlySpeed(flyspeed / 10f);
-                Util.sendUserMessage(sender, ConfigValues.flySpeedSetOther,
-                        thirdArgument, player);
-                Util.sendUserMessage(player, ConfigValues.flySpeedSetByOther,
-                        thirdArgument, sender);
-            } catch (NumberFormatException e) {
-                Util.sendUserMessage(sender, ConfigValues.invalidNumber);
-            }
-        }
+
+    private static int getOwnSpeed(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        if (!(context.getSource().getSender() instanceof Player player)) throw Exceptions.ERROR_MUST_BE_PLAYER.create();
+        float flyspeedValue = player.getFlySpeed() * 10.0f;
+        player.sendRichMessage(LocaleMessage.FLY_SPEED_GET_OWN.getMessage(),
+                Placeholder.parsed("value", String.valueOf(flyspeedValue)));
+        return Command.SINGLE_SUCCESS;
     }
-    
-    private void resetOtherFlySpeed(CommandSender sender, String[] args) {
-        Player player = SimpleFly.getFlyServer().getPlayer(args[1]);
-        if (player == null) {
-            Util.sendUserMessage(sender, ConfigValues.invalidPlayer);
-            return;
-        }
+
+    private static int getOtherSpeed(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        PlayerSelectorArgumentResolver targetResolver = context.getArgument("target", PlayerSelectorArgumentResolver.class);
+        Player target = targetResolver.resolve(context.getSource()).getFirst();
+        float targetSpeed = target.getFlySpeed() * 10f;
+        CommandSender sender = context.getSource().getSender();
+        sender.sendRichMessage(LocaleMessage.FLY_SPEED_GET_OTHER.getMessage(),
+                Placeholder.component("target", target.displayName()),
+                Placeholder.parsed("value", String.valueOf(targetSpeed)));
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int resetOwnSpeed(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        if (!(context.getSource().getSender() instanceof Player player)) throw Exceptions.ERROR_MUST_BE_PLAYER.create();
         player.setFlySpeed(0.1f);
-        Util.sendUserMessage(sender, ConfigValues.flySpeedResetOther,
-                null, player);
-        Util.sendUserMessage(player, ConfigValues.flySpeedResetByOther,
-                null, sender);
+        player.sendRichMessage(LocaleMessage.FLY_SPEED_RESET_OWN.getMessage());
+        return Command.SINGLE_SUCCESS;
     }
-    
-    private void getOtherFlySpeed(CommandSender sender, String[] args) {
-        Player player = SimpleFly.getFlyServer().getPlayer(args[1]);
-        if (player == null) {
-            Util.sendUserMessage(sender, ConfigValues.invalidPlayer);
-            return;
-        }
-        float flyspeed = player.getFlySpeed() * 10f;
-        Util.sendUserMessage(sender, ConfigValues.flySpeedGetOther,
-                String.valueOf(flyspeed), player);
+
+    private static int resetOtherSpeed(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSender sender = context.getSource().getSender();
+        PlayerSelectorArgumentResolver targetResolver = context.getArgument("targets", PlayerSelectorArgumentResolver.class);
+        List<Player> targets = targetResolver.resolve(context.getSource());
+
+        return setSpeed(targets, sender, 1.0f,
+                LocaleMessage.FLY_SPEED_RESET_OTHER.getMessage(),
+                LocaleMessage.FLY_SPEED_RESET_BY_OTHER.getMessage(),
+                LocaleMessage.FLY_SPEED_RESET_OTHER_MANY.getMessage());
     }
-    
-    private void setOwnSpeed(CommandSender sender, String[] args) {
-        float flyspeed;
-        Player player;
-        String secondArgument = args[1];
-        try {
-            flyspeed = Float.parseFloat(secondArgument);
-            player = (Player) sender;
-            if (flyspeed > ConfigValues.maxFlySpeed || flyspeed < ConfigValues.minFlySpeed) {
-                player.sendMessage(miniMessage.deserialize(ConfigValues.notInRange,
-                        Placeholder.parsed("min", String.valueOf(ConfigValues.minFlySpeed)),
-                        Placeholder.parsed("max", String.valueOf(ConfigValues.maxFlySpeed))));
-                return;
-            }
-            player.setFlySpeed(flyspeed / 10f);
-            Util.sendUserMessage(player, ConfigValues.flySpeedSetOwn,
-                    secondArgument, null);
-        } catch (NumberFormatException e) {
-            player = SimpleFly.getFlyServer().getPlayer(secondArgument);
-            if (player == null || !sender.hasPermission(Util.flySpeedOthersPermission)) {
-                Util.sendUserMessage(sender, ConfigValues.invalidNumber);
-                return;
-            }
-            Util.sendUserMessage(sender, ConfigValues.notEnoughArguments);
-        }
+
+    private static int setOwnSpeed(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        if (!(context.getSource().getSender() instanceof Player player)) throw Exceptions.ERROR_MUST_BE_PLAYER.create();
+        float speed = context.getArgument("speed", Float.class);
+        float actualSpeed = speed / 10f;
+        player.setFlySpeed(actualSpeed);
+        player.sendRichMessage(LocaleMessage.FLY_SPEED_SET_OWN.getMessage(),
+                Placeholder.parsed("value", String.valueOf(speed)));
+        return Command.SINGLE_SUCCESS;
     }
-    
-    private void resetOwnFlySpeed(CommandSender sender) {
-        if (CommandUtils.checkIfPlayerAndPerms(sender, Util.flySpeedPermission)) {
-            ((Player) sender).setFlySpeed(0.1f);
-            Util.sendUserMessage(sender, ConfigValues.flySpeedResetOwn);
-        }
+
+    private static int setOtherSpeed(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSender sender = context.getSource().getSender();
+        PlayerSelectorArgumentResolver targetResolver = context.getArgument("targets", PlayerSelectorArgumentResolver.class);
+        List<Player> targets = targetResolver.resolve(context.getSource());
+        float speed = context.getArgument("speed", Float.class);
+        return setSpeed(targets, sender, speed,
+                LocaleMessage.FLY_SPEED_SET_OTHER.getMessage(),
+                LocaleMessage.FLY_SPEED_SET_BY_OTHER.getMessage(),
+                LocaleMessage.FLY_SPEED_SET_OTHER_MANY.getMessage());
     }
-    
-    private void getOwnFlySpeed(CommandSender sender) {
-        if (CommandUtils.checkIfPlayerAndPerms(sender, Util.flySpeedPermission)) {
-            float flyspeed = ((Player) sender).getFlySpeed() * 10f;
-            Util.sendUserMessage(sender, ConfigValues.flySpeedGetOwn,
-                    String.valueOf(flyspeed), null);
+
+
+    @SuppressWarnings("SameReturnValue")
+    private static int setSpeed(List<Player> targets, CommandSender sender, float speed, String otherMessage,
+                                String byOtherMessage, String manyOtherMessage) throws CommandSyntaxException {
+        Component senderName;
+        if (sender instanceof Player playerSender) {
+            senderName = playerSender.displayName();
+        } else {
+            senderName = miniMessage.deserialize(LocaleMessage.SERVER_NAME.getMessage());
         }
-    }
-    
-    
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command
-            command, @NotNull String s, @NotNull String[] args) {
-        if (sender.hasPermission(Util.flySpeedPermission) && args.length == 1) {
-            tabComplete.clear();
-            tabComplete.add(setArg);
-            tabComplete.add(resetArg);
-            if (sender.hasPermission(Util.flySpeedOthersPermission)) {
-                tabComplete.add(getArg);
-            }
-            return tabComplete;
+        float flySpeed = speed / 10f;
+        if (targets.isEmpty()) throw Exceptions.NO_USERS_FOUND.create();
+        if (targets.size() == 1) {
+            Player player = targets.getFirst();
+            player.setFlySpeed(flySpeed);
+            player.sendRichMessage(
+                    byOtherMessage,
+                    Placeholder.component("initiator", senderName),
+                    Placeholder.parsed("value", String.valueOf(speed))
+            );
+            sender.sendRichMessage(
+                    otherMessage,
+                    Placeholder.component("target", player.displayName()),
+                    Placeholder.parsed("value", String.valueOf(speed))
+            );
+            return Command.SINGLE_SUCCESS;
         }
-        if (args.length == 3) {
-            return List.of("");
+        int modified = 0;
+        for (Player player : targets) {
+            player.setFlySpeed(flySpeed);
+            player.sendRichMessage(
+                    byOtherMessage,
+                    Placeholder.component("initiator", senderName),
+                    Placeholder.parsed("value", String.valueOf(speed)));
+            modified++;
         }
-        return null;
+        sender.sendRichMessage(manyOtherMessage,
+                Placeholder.parsed("count", String.valueOf(modified)),
+                Placeholder.parsed("value", String.valueOf(speed)));
+        return Command.SINGLE_SUCCESS;
     }
 }
+
