@@ -7,10 +7,12 @@ name: "Version Bump Check"
 on:
   pull_request:
     branches: [ "main" ]
-    branches-ignore: [ "ci/*" ]
 jobs:
   ensure-version-bump:
-    if: ${{ github.base_ref == 'main' || github.base_ref == 'master' }}
+    if: ${{ (github.base_ref == 'main' || github.base_ref == 'master') && !(
+      startsWith(github.head_ref, 'ci/') ||
+      startsWith(github.head_ref, 'doc/')
+      )}}
     runs-on: ubuntu-latest
 
     steps:
